@@ -1,0 +1,2124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scroll-Animated Product Gallery with Team Section</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital@1&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            line-height: 1.6;
+            overflow-x: hidden;
+            margin: 0;
+            padding: 0;
+            background: #ede2e2;
+            color: #000000;
+            font-family: 'Helvetica Neue', sans-serif;
+            height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+
+        .section {
+            margin-bottom: 4rem;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .section.animate {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: #666;
+            max-width: 1000px;
+            margin: 0 auto;
+            line-height: 1.8;
+        }
+
+        /* Navbar */
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #ffffff;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 30px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .nav-links {
+            list-style: none;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links li a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links li a:hover {
+            color: #007bff;
+        }
+
+        /* Hero Section */
+        .hero {
+            height:180vh;
+            display: flex;
+            width:100%;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: #0a0a0a;
+            position:relative;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(
+                circle at center,
+                rgba(255, 255, 255, 0.03) 0%,
+                transparent 70%
+            );
+            pointer-events: none;
+        }
+
+        .text-container {
+            position: relative;
+            z-index: 100;
+            width: 600px;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .text-line {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            line-height: 0.9;
+            letter-spacing: -2px;
+            margin: 15px 0;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+
+        .text-line.exit-up {
+            opacity: 0;
+            transform: translateY(-120px) scale(0.8);
+            filter: blur(5px);
+        }
+
+        .text-line.enter-from-bottom {
+            opacity: 0;
+            transform: translateY(120px) scale(0.8);
+            filter: blur(5px);
+            animation: slideInFromBottom 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        .text-line.exit-down {
+            opacity: 0;
+            transform: translateY(120px) scale(0.8);
+            filter: blur(5px);
+        }
+
+        .text-line.enter-from-top {
+            opacity: 0;
+            transform: translateY(-120px) scale(0.8);
+            filter: blur(5px);
+            animation: slideInFromTop 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+
+        @keyframes slideInFromBottom {
+            0% {
+                opacity: 0;
+                transform: translateY(120px) scale(0.8);
+                filter: blur(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+            }
+        }
+
+        @keyframes slideInFromTop {
+            0% {
+                opacity: 0;
+                transform: translateY(-120px) scale(0.8);
+                filter: blur(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0px);
+            }
+        }
+
+        .accent-dot {
+            width: 28px;
+            height: 28px;
+            background: #e6ff00;
+            border-radius: 50%;
+            position: absolute;
+            right: -60px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: all 0.8s ease;
+            box-shadow: 0 0 20px rgba(230, 255, 0, 0.6);
+        }
+
+        .accent-dot.visible {
+            opacity: 1;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                transform: translateY(-50%) scale(1);
+            }
+            50% {
+                transform: translateY(-50%) scale(1.2);
+            }
+        }
+
+        /* Cursor Ripple Effect */
+        .ripple-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+        }
+
+        .ripple {
+            position: absolute;
+            background: radial-gradient(
+                circle,
+                rgba(255, 255, 255, 0.2) 0%,
+                rgba(255, 255, 255, 0.1) 30%,
+                transparent 70%
+            );
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: ripple-animation 2.5s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes ripple-animation {
+            0% {
+                width: 0;
+                height: 0;
+                opacity: 0.8;
+            }
+            20% {
+                opacity: 0.6;
+            }
+            100% {
+                width: 800px;
+                height: 800px;
+                opacity: 0;
+            }
+        }
+
+        .custom-cursor {
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 10000;
+            transition: transform 0.1s ease;
+            mix-blend-mode: difference;
+        }
+
+        .custom-cursor.active {
+            transform: translate(-50%, -50%) scale(2);
+        }
+
+        @media (pointer: fine) {
+            .custom-cursor {
+                display: block;
+            }
+            * {
+                cursor: none !important;
+            }
+        }
+
+        /* Marquee Section */
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-top: 4rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            background: linear-gradient(135deg, #ffffff 0%, #cccccc 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 0 30px rgba(255, 255, 255, 0.1);
+        }
+        .marquee-section {
+            width: 100%;
+            margin-top: 4rem;
+            position:relative;
+        }
+
+        .section-title {
+            position: absolute;
+            top: -3rem;
+            left: 2rem;
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.7);
+            z-index: 10;
+        }
+
+        .marquee-container {
+            width: 100%;
+            overflow: hidden;
+            background: rgba(20, 20, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem 0;
+            margin: 0 2rem;
+            position: relative;
+        }
+
+        .marquee-container:hover .marquee {
+            animation-play-state: paused;
+        }
+
+        .marquee {
+            display: flex;
+            animation: scroll 10s linear infinite;
+            width: fit-content;
+            gap: 0;
+        }
+
+        .marquee-item {
+            flex: 0 0 auto;
+            width: 400px;
+            height: 480px;
+            margin-right: 3.5rem;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            background: #1a1a1a;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+        }
+
+        .marquee-item:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .marquee-item img {
+            width: 100%;
+            height: 82%;
+            object-fit: cover;
+            transition: transform 0.4s ease;
+            transform: scale(1);
+            transform-origin: center;
+        }
+
+        .marquee-item:hover img {
+            transform: scale(0.85);
+        }
+
+        .item-content {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 18%;
+            padding: 1rem 1.5rem;
+            background: rgba(246, 242, 242, 0.95);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+
+        .item-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .item-version {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .marquee-nav {
+            position: absolute;
+            bottom: -3rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .nav-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .nav-dot.active {
+            background: #ffffff;
+            transform: scale(1.2);
+        }
+
+        @keyframes scroll {
+            0% {
+                transform: translateX(0);
+            }
+            100% {
+                transform: translateX(calc(-400px * 5 - 17.5rem));
+            }
+        }
+
+        /* Features Section */
+        .features-section {
+            background: rgba(255, 255, 255, 0.732);
+            border-radius: 20px;
+            padding: 3rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+            margin-bottom: 4rem;
+            max-width: 1100px;
+            max-height: min-content;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            text-align: center;
+        }
+
+        .feature-item {
+            padding: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .feature-item:hover {
+            transform: translateY(-5px);
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #cec4b7, #cbc3ba);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 0.8rem;
+        }
+
+        .feature-description {
+            font-size: 0.95rem;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* Middle Section - 2 Images */
+        .middle-section {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .middle-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            height: 400px;
+        }
+
+        .middle-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            height: 70%;
+            overflow: hidden;
+        }
+
+        .scroll-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transform: scale(1.2);
+        }
+
+        .scroll-image.zoom-in {
+            transform: scale(1);
+        }
+
+        .scroll-image.zoom-out {
+            transform: scale(1.3);
+        }
+
+        .item-info {
+            padding: 1.5rem;
+            height: 30%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .item-category {
+            font-size: 0.85rem;
+            color: #999;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-title {
+            font-size: 1.2rem;
+            font-weight: 500;
+            color: #2c2c2c;
+            margin-bottom: 0.5rem;
+        }
+
+        .item-price {
+            font-size: 1rem;
+            color: #8B7355;
+            font-weight: 600;
+        }
+
+        .middle-item .image-wrapper {
+            height: 75%;
+        }
+
+        .middle-item .item-info {
+            height: 25%;
+            padding: 1.8rem;
+        }
+
+        /* Featured Products Section */
+        .featured-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .featured-header h2 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            margin-bottom: 1rem;
+        }
+
+        .featured-header p {
+            font-size: 1.1rem;
+            color: #666;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .featured-container {
+            position: relative;
+            height: 500px;
+            border-radius: 15px;
+            overflow: hidden;
+            background: white;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .featured-slider {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .featured-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 0.6s ease-in-out;
+        }
+
+        .featured-slide.active {
+            opacity: 1;
+        }
+
+        .featured-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transform: scale(1.1);
+            transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .featured-slide.active img.zoom-in {
+            transform: scale(1);
+        }
+
+        .featured-slide.active img.zoom-out {
+            transform: scale(1.2);
+        }
+
+        .featured-info {
+            position: relative;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+            padding: 2.5rem;
+            transform: translateY(20%);
+            transition: transform 0.4s ease;
+        }
+
+        .featured-container:hover .featured-info {
+            transform: translateY(0);
+        }
+
+        .featured-title {
+            font-size: 2rem;
+            font-weight: 300;
+            margin-bottom: 0.8rem;
+        }
+
+        .featured-description {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-bottom: 1rem;
+        }
+
+        .featured-price {
+            font-size: 1.6rem;
+            font-weight: 600;
+            color: #8B7355;
+        }
+
+        .slider-dots {
+            position: absolute;
+            bottom: 25px;
+            right: 25px;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .dot.active {
+            background: white;
+            transform: scale(1.3);
+        }
+
+        .small-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: 1fr 1fr;
+            gap: 1rem;
+            height: 500px;
+        }
+
+        .small-item {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .small-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        .small-item .image-wrapper {
+            height: 70%;
+        }
+
+        .small-item .item-info {
+            height: 30%;
+            padding: 1rem;
+        }
+
+        .small-item .item-title {
+            font-size: 0.9rem;
+        }
+
+        .small-item .item-price {
+            font-size: 0.85rem;
+        }
+
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .bottom-item {
+            background: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+            transition: all 0.4s ease;
+            cursor: pointer;
+            height: 380px;
+            position: relative;
+        }
+
+        .bottom-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.18);
+        }
+
+        .vertical-slider {
+            position: relative;
+            width: 100%;
+            height: 70%;
+            overflow: hidden;
+        }
+
+        .vertical-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .vertical-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .horizontal-slider {
+            position: relative;
+            width: 100%;
+            height: 70%;
+            overflow: hidden;
+        }
+
+        .horizontal-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s ease-in-out;
+        }
+
+        .horizontal-slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .bottom-item .item-info {
+            height: 30%;
+            padding: 1.5rem;
+        }
+
+        .bottom-item .item-title {
+            font-size: 1.2rem;
+        }
+
+        .bottom-item .item-price {
+            font-size: 1rem;
+        }
+
+        .slider-indicators {
+            position: absolute;
+            bottom: 100px;
+            right: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 10;
+        }
+
+        .horizontal-indicators {
+            flex-direction: row;
+            bottom: 100px;
+            right: 50%;
+            transform: translateX(50%);
+        }
+
+        .indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.5);
+            transition: all 0.3s ease;
+        }
+
+        .indicator.active {
+            background: white;
+            transform: scale(1.2);
+        }
+
+        /* Team Showcase Section */
+        .team-section {
+            margin-top: 5rem;
+            margin-bottom: 4rem;
+        }
+
+        .team-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .team-header h2 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            color: #2c2c2c;
+            margin-bottom: 1rem;
+        }
+
+        .team-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .team-list {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .team-member {
+            display: flex;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            margin-bottom: 0.5rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative;
+            background: transparent;
+        }
+
+        .team-member:last-child {
+            margin-bottom: 0;
+        }
+
+        .team-member:hover {
+            background: linear-gradient(135deg, #4a90e2, #357abd);
+            color: white;
+            transform: translateX(10px);
+            box-shadow: 0 8px 25px rgba(74, 144, 226, 0.3);
+        }
+
+        .member-number {
+            font-size: 1.2rem;
+            font-weight: 300;
+            color: #999;
+            margin-right: 2rem;
+            min-width: 30px;
+            transition: color 0.4s ease;
+        }
+
+        .team-member:hover .member-number {
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .member-info {
+            flex: 1;
+        }
+
+        .member-name {
+            font-size: 1.4rem;
+            font-weight: 500;
+            color: #2c2c2c;
+            margin-bottom: 0.3rem;
+            transition: color 0.4s ease;
+        }
+
+        .team-member:hover .member-name {
+            color: white;
+        }
+
+        .member-role {
+            font-size: 1rem;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            font-weight: 400;
+            transition: color 0.4s ease;
+        }
+
+        .team-member:hover .member-role {
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .profile-images {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+        }
+
+        .profile-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0);
+            opacity: 0;
+            transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 10;
+        }
+
+        .profile-image.active {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .profile-image img {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 6px solid white;
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .profile-image.active img {
+            transform: scale(1.05);
+        }
+
+        /* Scroll Progress Indicator */
+        .scroll-progress {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 0%;
+            height: 4px;
+            background: linear-gradient(90deg, #e7e6e6, #a68660);
+            z-index: 1000;
+            transition: width 0.1s ease;
+        }
+        .cookie-consent {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background-color: #f9eeee;
+            border: 1px solid #040000;
+            padding: 15px 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+            z-index: 9999;
+            flex-direction: column;
+            font-size: 14px;
+            max-width: 280px;
+            opacity: 1;
+            transform: translateY(0);
+            transition: all 0.3s ease-out;
+        }
+
+        .cookie-consent.fade-out {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .cookie-consent p {
+            margin: 10px 10px 10px 10px;
+        }
+
+        .cookie-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .cookie-buttons button {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: background-color 0.2s ease;
+        }
+
+        .cookie-buttons .accept {
+            background-color: #007bff;
+            color: white;
+        }
+
+        .cookie-buttons .accept:hover {
+            background-color: #0056b3;
+        }
+
+        .cookie-buttons .decline {
+            background-color: #6c757d;
+            color: white;
+        }
+
+        .cookie-buttons .decline:hover {
+            background-color: #545b62;
+        }
+        /* Page Transition */
+        .page-transition {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #ffffff 0%, #f0f0f0 100%);
+            z-index: 8888;
+            clip-path: circle(0% at 50% 50%);
+            transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .page-transition.active {
+            clip-path: circle(150% at 50% 50%);
+        }
+
+        /* Parallax effect for backgrounds */
+        .parallax-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 120%;
+            background: linear-gradient(135deg, #f4f3ec 0%, #e3e4ca 100%);
+            z-index: -1;
+            transform: translateY(0);
+            transition: transform 0.1s ease-out;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #1a1a1a;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+            .marquee {
+                animation-play-state: paused;
+            }
+        }
+
+        @media screen and (max-width: 1023px) {
+            .features-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            .featured-container {
+                height: 400px;
+            }
+            .small-grid {
+                height: auto;
+                grid-template-rows: 250px 250px;
+            }
+            .team-container {
+                max-width: 600px;
+            }
+            .profile-image img {
+                width: 150px;
+                height: 150px;
+            }
+            .hero .text-container {
+                width: 500px;
+            }
+            .text-line {
+                font-size: clamp(2rem, 5vw, 4rem);
+            }
+            .marquee-container {
+                margin: 0 1rem;
+            }
+            .marquee-item {
+                width: 320px;
+                height: 380px;
+            }
+            @keyframes scroll {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(calc(-320px * 5 - 17.5rem));
+                }
+            }
+        }
+
+        @media screen and (max-width: 767px) {
+            .container {
+                padding: 2rem 1rem;
+            }
+            .header h1 {
+                font-size: 2.2rem;
+            }
+            .features-grid {
+                gap: 1.5rem;
+            }
+            .middle-section {
+                grid-template-columns: 1fr;
+            }
+            .small-grid {
+                grid-template-columns: 1fr;
+                grid-template-rows: repeat(4, 200px);
+            }
+            .bottom-row {
+                grid-template-columns: 1fr;
+            }
+            .bottom-item {
+                height: 320px;
+            }
+            .featured-container {
+                height: 350px;
+            }
+            .team-header h2 {
+                font-size: 2rem;
+            }
+            .team-list {
+                padding: 1.5rem;
+            }
+            .team-member {
+                padding: 1.2rem 1rem;
+            }
+            .member-number {
+                margin-right: 1rem;
+                min-width: 25px;
+                font-size: 1rem;
+            }
+            .member-name {
+                font-size: 1.2rem;
+            }
+            .member-role {
+                font-size: 0.9rem;
+            }
+            .profile-image img {
+                width: 120px;
+                height: 120px;
+            }
+            .team-member:hover {
+                transform: translateX(5px);
+            }
+            .hero .text-container {
+                width: 350px;
+                left: 20px;
+            }
+            
+            .text-line {
+                font-size: clamp(1.5rem, 4vw, 3rem);
+            }
+            .marquee-item {
+                width: 280px;
+                height: 340px;
+            }
+            @keyframes scroll {
+                0% {
+                    transform: translateX(0);
+                }
+                100% {
+                    transform: translateX(calc(-280px * 5 - 17.5rem));
+                }
+            }
+        }
+        #loader {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        }
+
+        .loading-counter {
+        font-size: 1.2rem;
+        font-style: italic;
+        font-family: 'Georgia', serif;
+        margin-bottom: 2rem;
+        color: #2f0000;
+        }
+
+        .loading-text {
+        font-size: 5vw;
+        font-weight: bold;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 0.5rem;
+        color:rgb(50, 9, 56);
+        }
+        .word1 { animation: fadeIn 0.5s forwards 0.9s; opacity: 1; }
+        .word2 { animation: fadeIn 0.9s forwards 1.3; opacity: 0.85; }
+        .word3 { animation: fadeIn 1.4s forwards 1.7s; opacity: 0.7; }
+        .word4 { animation: fadeIn 1.7s forwards 2s; opacity: 0.5; }
+        .word5 { animation: fadeIn 2s forwards 2.4s; opacity: 0.4; }
+        .word6 { animation: fadeIn 2.5s forwards 2.7s; opacity: 0.3; }
+        .word7 {
+        animation: fadeIn 1.6s forwards 2s;
+        opacity: 0.1;
+        transition: font-family 0.5s ease;
+        font-weight: normal;
+        font-style: italic;
+        }
+
+        @keyframes fadeIn {
+        to { opacity: 1; }
+        }
+
+        .subtext {
+        color: #aaa;
+        font-size: 0.9rem;
+        margin-top: 2rem;
+        text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="root"></div>
+    <div class="scroll-progress"></div>
+    <div class="parallax-bg"></div>
+    <div class="ripple-container" id="rippleContainer"></div>
+    <div class="custom-cursor" id="cursor"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="logo">MySite</div>
+        <ul class="nav-links">
+            <li><a href="#home">Home</a></li>
+            <li><a href="#contact">Contact</a></li>
+        </ul>
+    </nav>
+    <br><br>
+        <div id="loader">
+    <div class="loading-counter" id="counter">1 - 100</div>
+    <div class="loading-text">
+        <span class="word1">YOUR</span>
+        <span class="word2">PRODUCT</span>
+        <span class="word3">EXPERIENCE</span>
+        <span class="word4">IS</span>
+        <span class="word5">LOADING</span>
+        <span class="word6">RIGHT</span>
+        <span class="word7">NOW</span>
+    </div>
+    <p class="subtext">Please wait<br>a few seconds.</p>
+    </div>
+
+    <!-- Home Section -->
+    <section id="home" class="hero section">
+      <h1>PIXXELHACK</h1>
+        <div class="marquee-section">
+            <div class="section-title">Looping Marquee (Pause on Hover)</div>
+            <div class="marquee-container">
+                <div class="marquee">
+                    <div class="marquee-item">
+                        <img src="https://plus.unsplash.com/premium_photo-1688125414593-391cf90f3103?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZnVybml0dXJlfGVufDB8fDB8fHww" alt="Office Interior" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V1</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://plus.unsplash.com/premium_photo-1669748156838-33fda144e8dd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fG5hdHVyZSUyMGJlYXV0aWZ1bHxlbnwwfHwwfHx8MA%3D%3D" alt="Minimal Desk" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V2</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://images.unsplash.com/photo-1618220179428-22790b461013?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZ1cm5pdHVyZXxlbnwwfHwwfHx8MA%3D%3D" alt="Mountain View" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V3</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://images.unsplash.com/photo-1753903770752-2958349862f5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzfHx8ZW58MHx8fHx8" alt="Modern Office" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V4</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://plus.unsplash.com/premium_photo-1676475964992-6404b8db0b53?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8Zmxvd2Vyc3xlbnwwfHwwfHx8MA%3D%3D" alt="Industrial Space" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V5</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://plus.unsplash.com/premium_photo-1688125414593-391cf90f3103?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NXx8ZnVybml0dXJlfGVufDB8fDB8fHww" alt="Office Interior" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V1</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://plus.unsplash.com/premium_photo-1669748156838-33fda144e8dd?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fG5hdHVyZSUyMGJlYXV0aWZ1bHxlbnwwfHwwfHx8MA%3D%3D" alt="Minimal Desk" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V2</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://images.unsplash.com/photo-1618220179428-22790b461013?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTB8fGZ1cm5pdHVyZXxlbnwwfHwwfHx8MA%3D%3D" alt="Mountain View" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V3</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://images.unsplash.com/photo-1753903770752-2958349862f5?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxmZWF0dXJlZC1waG90b3MtZmVlZHwzfHx8ZW58MHx8fHx8" alt="Modern Office" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V4</div>
+                        </div>
+                    </div>
+                    <div class="marquee-item">
+                        <img src="https://images.unsplash.com/photo-1476994230281-1448088947db?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8NDV8fGZsb3dlcnN8ZW58MHx8MHx8fDA%3D" alt="Industrial Space" loading="lazy">
+                        <div class="item-content">
+                            <div class="item-title">Collection V5</div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+              <div class="marquee-nav">
+                <div class="nav-dot active"></div>
+                <div class="nav-dot"></div>
+                <div class="nav-dot"></div>
+                <div class="nav-dot"></div>
+                <div class="nav-dot"></div>
+              </div>
+            </div>
+        <div class="text-container" id="textContainer"></div>
+    </section>
+
+    <div class="container">
+        <!-- Features Section -->
+        <div class="features-section section">
+            <div class="features-grid">
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <img src="https://cdni.iconscout.com/illustration/premium/thumb/door-to-delivery-service-illustration-download-in-svg-png-gif-file-formats--direct-home-point-pack-e-commerce-shopping-illustrations-8333964.png" alt="Customer Centric Approach" width="100px">
+                    </div>
+                    <div class="feature-title">Free Shipping</div>
+                    <div class="feature-description">Free delivery on all orders over $299. Fast and secure shipping to your doorstep.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <img src="https://tse2.mm.bing.net/th/id/OIP.dkaAimYXaZwFPJVIaNmZQQHaJQ?pid=Api&P=0&h=180" alt="Quality Guarantee" width="70px">
+                    </div>
+                    <div class="feature-title">Quality Guarantee</div>
+                    <div class="feature-description">Premium materials and craftsmanship with lifetime warranty on all products.</div>
+                </div>
+                <div class="feature-item">
+                    <div class="feature-icon">
+                        <img src="https://tse3.mm.bing.net/th/id/OIP._h02mScyYyPDKK6Uh9QIxAAAAA?pid=Api&P=0&h=180" alt="safe payment" width="70px">
+                    </div>
+                    <div class="feature-title">Safe Payment</div>
+                    <div class="feature-description">Safe and secure payment options for your peace of mind.</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Middle Section - 2 Images -->
+        <div class="middle-section section">
+            <div class="middle-item">
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&h=450&fit=crop&crop=entropy&auto=format&q=80" alt="Scandinavian furniture collection" class="scroll-image" loading="lazy">
+                </div>
+                <div class="item-info">
+                    <div class="item-category">Tables & Storage</div>
+                    <div class="item-title">Scandinavian Collection</div>
+                    <div class="item-price">Starting from $549</div>
+                </div>
+            </div>
+            <div class="middle-item">
+                <div class="image-wrapper">
+                    <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&h=450&fit=crop&crop=entropy&auto=format&q=80" alt="Luxury bedroom furniture" class="scroll-image" loading="lazy">
+                </div>
+                <div class="item-info">
+                    <div class="item-category">Bedroom</div>
+                    <div class="item-title">Luxury Bedroom Suite</div>
+                    <div class="item-price">Starting from $1,899</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Featured Products Section -->
+        <div class="section">
+            <div class="featured-header">
+                <h2>Featured Products</h2>
+                <p>A fusion of comfort, style and quality without compromise. An investment in unrivalled craftsmanship and design to make your home a very special place.</p>
+            </div>
+            <div class="main-grid">
+                <div class="featured-container">
+                    <div class="featured-slider">
+                        <div class="featured-slide active">
+                            <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=800&h=600&fit=crop&crop=entropy&auto=format&q=80" alt="Premium living room setup" class="scroll-image" loading="lazy">
+                        </div>
+                        <div class="featured-slide">
+                            <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&h=600&fit=crop&crop=entropy&auto=format&q=80" alt="Contemporary workspace design" class="scroll-image" loading="lazy">
+                        </div>
+                        <div class="featured-slide">
+                            <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=800&h=600&fit=crop&crop=entropy&auto=format&q=80" alt="Luxury bedroom collection" class="scroll-image" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="featured-info">
+                        <h2 class="featured-title">Premium Collection</h2>
+                        <p class="featured-description">Expertly crafted furniture pieces that blend functionality with sophisticated design aesthetics.</p>
+                        <div class="featured-price">Starting from $1,299</div>
+                    </div>
+                    <div class="slider-dots">
+                        <span class="dot active" data-slide="0"></span>
+                        <span class="dot" data-slide="1"></span>
+                        <span class="dot" data-slide="2"></span>
+                    </div>
+                </div>
+                <div class="small-grid">
+                    <div class="small-item">
+                        <div class="image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=300&h=250&fit=crop&crop=entropy&auto=format&q=80" alt="Accent chair" class="scroll-image" loading="lazy">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Accent Chair</div>
+                            <div class="item-price">$299</div>
+                        </div>
+                    </div>
+                    <div class="small-item">
+                        <div class="image-wrapper">
+                            <img src="https://images.dunelm.com/30771876.jpg?$standardplayerdefault$&img404=noimagedefault" alt="Side table" class="scroll-image" loading="lazy">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Side Table</div>
+                            <div class="item-price">$199</div>
+                        </div>
+                    </div>
+                    <div class="small-item">
+                        <div class="image-wrapper">
+                            <img src="https://i.pinimg.com/originals/25/79/76/257976d2337b3ac3eb80c63a051650b3.jpg" alt="Desk organizer" class="scroll-image" loading="lazy">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Desk Set</div>
+                            <div class="item-price">$149</div>
+                        </div>
+                    </div>
+                    <div class="small-item">
+                        <div class="image-wrapper">
+                            <img src="https://images.unsplash.com/photo-1692645214208-e150e2293672?mark=https:%2F%2Fimages.unsplash.com%2Fopengraph%2Flogo.png&mark-w=64&mark-align=top%2Cleft&mark-pad=50&h=630&w=1200&crop=faces%2Cedges&blend-w=1&blend=000000&blend-mode=normal&blend-alpha=10&auto=format&fit=crop&q=60&ixid=M3wxMjA3fDB8MXxhbGx8fHx8fHx8fHwxNzQ2ODQwNTgwfA&ixlib=rb-4.1.0" alt="Bedside lamp" class="scroll-image" loading="lazy">
+                        </div>
+                        <div class="item-info">
+                            <div class="item-title">Table Lamp</div>
+                            <div class="item-price">$89</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-row">
+                <div class="bottom-item">
+                    <div class="vertical-slider">
+                        <div class="vertical-slide" style="transform: translateY(0%);">
+                            <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&h=400&fit=crop&crop=entropy&auto=format&q=80" alt="Artisan crafted furniture 1" loading="lazy">
+                        </div>
+                        <div class="vertical-slide" style="transform: translateY(100%);">
+                            <img src="https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=600&h=400&fit=crop&crop=entropy&auto=format&q=80" alt="Artisan crafted furniture 2" loading="lazy">
+                        </div>
+                        <div class="vertical-slide" style="transform: translateY(200%);">
+                            <img src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&h=400&fit=crop&crop=entropy&auto=format&q=80" alt="Artisan crafted furniture 3" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="slider-indicators">
+                        <span class="indicator active" data-vertical="0"></span>
+                        <span class="indicator" data-vertical="1"></span>
+                        <span class="indicator" data-vertical="2"></span>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-category">Artisan Collection</div>
+                        <div class="item-title">Handcrafted Furniture</div>
+                        <div class="item-price">Starting from $799</div>
+                    </div>
+                </div>
+                <div class="bottom-item">
+                    <div class="horizontal-slider">
+                        <div class="horizontal-slide" style="transform: translateX(0%);">
+                            <img src="https://images.unsplash.com/photo-1616594039964-ae9021a400a0?w=600&h=400&fit=crop&crop=entropy&auto=format&q=80" alt="Premium comfort collection 1" loading="lazy">
+                        </div>
+                        <div class="horizontal-slide" style="transform: translateX(100%);">
+                            <img src="https://images.unsplash.com/photo-1506439773649-6e0eb8cfb237?w=600&h=400&fit=crop&crop=entropy&auto=format&q=80" alt="Premium comfort collection 2" loading="lazy">
+                        </div>
+                        <div class="horizontal-slide" style="transform: translateX(200%);">
+                            <img src="https://images.unsplash.com/photo-1567538096630-e0c55bd6374c?w=600&h=400&fit=crop&crop=entropy&auto=format&q=80" alt="Premium comfort collection 3" loading="lazy">
+                        </div>
+                    </div>
+                    <div class="slider-indicators horizontal-indicators">
+                        <span class="indicator active" data-horizontal="0"></span>
+                        <span class="indicator" data-horizontal="1"></span>
+                        <span class="indicator" data-horizontal="2"></span>
+                    </div>
+                    <div class="item-info">
+                        <div class="item-category">Comfort Series</div>
+                        <div class="item-title">Ultimate Relaxation</div>
+                        <div class="item-price">Starting from $1,499</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact Section with Team -->
+        <section id="contact" class="section">
+            <div class="team-section">
+                <div class="team-header">
+                    <h2>Our Team</h2>
+                </div>
+                <div class="team-container">
+                    <div class="team-list">
+                        <div class="team-member" data-member="rick">
+                            <div class="member-number">01</div>
+                            <div class="member-info">
+                                <div class="member-name">Dr. Rick McCartney</div>
+                                <div class="member-role" style="text-align: right;">CEO</div>
+                            </div>
+                        </div>
+                        <div class="team-member" data-member="chris">
+                            <div class="member-number">02</div>
+                            <div class="member-info">
+                                <div class="member-name">Chris Koha</div>
+                                <div class="member-role" style="text-align: right;">COO</div>
+                            </div>
+                        </div>
+                        <div class="team-member" data-member="caroline">
+                            <div class="member-number">03</div>
+                            <div class="member-info">
+                                <div class="member-name">Caroline Nieto</div>
+                                <div class="member-role" style="text-align: right;">Chief Product Officer</div>
+                            </div>
+                        </div>
+                        <div class="team-member" data-member="victor">
+                            <div class="member-number">04</div>
+                            <div class="member-info">
+                                <div class="member-name">Víctor Albertos</div>
+                                <div class="member-role" style="text-align: right;">CTO</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="profile-images">
+                        <div class="profile-image" data-profile="rick">
+                            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&crop=face&auto=format&q=80" alt="Dr. Rick McCartney" loading="lazy">
+                        </div>
+                        <div class="profile-image" data-profile="chris">
+                            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&crop=face&auto=format&q=80" alt="Chris Koha" loading="lazy">
+                        </div>
+                        <div class="profile-image" data-profile="caroline">
+                            <img src="https://img.freepik.com/premium-photo/portrait-professional-business-person_975403-4747.jpg" alt="Caroline Nieto" loading="lazy">
+                        </div>
+                        <div class="profile-image" data-profile="victor">
+                            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&crop=face&auto=format&q=80" alt="Víctor Albertos" loading="lazy">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div id="cookie-box" class="cookie-consent">
+    <p id="cookie-message">We use cookies to enhance your experience.</p>
+    <div class="cookie-buttons">
+        <button class="accept" onclick="acceptCookies()" aria-label="Accept all cookies">Accept All</button>
+        <button class="decline" onclick="declineCookies()" aria-label="Decline non-essential cookies">Decline</button>
+    </div>
+</div>
+
+    <div class="page-transition"></div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+                // Cookie consent logic
+                // Text sequence for animated text
+                let i = 1;
+                const counter = document.getElementById("counter");
+                const interval = setInterval(() => {
+                    if (i < 100) {
+                        i++;
+                        counter.textContent = `${i} - 100`;
+                    } else {
+                        clearInterval(interval);
+                    }
+                }, 80);
+                const fonts = [
+                    "'Playfair Display', serif",
+                    "'Georgia', serif",
+                    "'Courier New', monospace",
+                    "'Arial Black', sans-serif",
+                    "'Brush Script MT', cursive"
+                ];
+                const nowWord = document.querySelector('.word7');
+                let f = 0;
+                setInterval(() => {
+                    nowWord.style.fontFamily = fonts[f % fonts.length];
+                    f++;
+                }, 1000);
+
+                const textSequence = [
+                    ["S"],
+                    ["S", "SE"],
+                    ["S", "SE", "SEI"],
+                    ["S", "SE", "SEI", "SEIZ"],
+                    ["S", "SE", "SEI", "SEIZ", "SEIZE"],
+                    ["SE", "SEI", "SEIZ", "SEIZE"],
+                    ["SEI", "SEIZ", "SEIZE"],
+                    ["SEIZ", "SEIZE"],
+                    ["SEIZE"],
+                    ["SEIZE", "GR"],
+                    ["SEIZE", "GRE"],
+                    ["SEIZE", "GREA"],
+                    ["SEIZE", "GREAT"],
+                    ["SEIZE", "GREATN"],
+                    ["SEIZE", "GREATNE"],
+                    ["SEIZE", "GREATNES"],
+                    ["SEIZE", "GREATNESS"]
+                ];
+
+                const textContainer = document.getElementById("textContainer");
+                let currentVisibleLines = [];
+                let maxVisibleLines = 4;
+                let isInitialized = false;
+                let lastScrollY = 0;
+
+                function initializeText() {
+                    const textContainer = document.getElementById("textContainer");
+                    if (!textContainer) {
+                        console.warn("textContainer not found");
+                        return;
+                    }
+                    
+                    textContainer.innerHTML = "";
+                    const firstSequence = textSequence[0];
+                    if (firstSequence) {
+                        firstSequence.forEach((text, index) => {
+                            const line = document.createElement("div");
+                            line.className = "text-line";
+                            line.textContent = text;
+                            textContainer.appendChild(line);
+                        });
+                    }
+                    currentVisibleLines = [0];
+                    isInitialized = true;
+                }
+
+                function updateVisibleLines(sequenceIndex, scrollDirection) {
+                    const textContainer = document.getElementById("textContainer");
+                    if (!textContainer) return;
+                    
+                    const lines = textContainer.querySelectorAll(".text-line");
+                    lines.forEach((line, index) => {
+                        if (scrollDirection > 0) {
+                            line.classList.add("exit-up");
+                        } else {
+                            line.classList.add("exit-down");
+                        }
+                        line.style.transitionDelay = `${index * 0.1}s`;
+                    });
+
+                    setTimeout(() => {
+                        if (!textContainer) return;
+                        textContainer.innerHTML = "";
+                        const currentSequence = textSequence[sequenceIndex];
+                        if (currentSequence) {
+                            currentSequence.forEach((text, position) => {
+                                const line = document.createElement("div");
+                                if (scrollDirection > 0) {
+                                    line.className = "text-line enter-from-bottom";
+                                } else {
+                                    line.className = "text-line enter-from-top";
+                                }
+                                line.textContent = text;
+                                if (text === "SEIZE GREATNESS") {
+                                    line.innerHTML = text + '<div class="accent-dot visible"></div>';
+                                }
+                                textContainer.appendChild(line);
+                                line.style.animationDelay = `${position * 0.15}s`;
+                            });
+                        }
+                    }, 400);
+                }
+
+                function updateAnimation() {
+                    if (!isInitialized) return;
+                    const textContainer = document.getElementById("textContainer");
+                    if (!textContainer) return;
+                    
+                    const scrollY = window.pageYOffset;
+                    const maxScroll = document.body.scrollHeight - window.innerHeight;
+                    const scrollProgress = scrollY / maxScroll;
+                    const scrollDirection = scrollY > lastScrollY ? 1 : -1;
+                    lastScrollY = scrollY;
+                    const totalSequences = textSequence.length - 1;
+                    const currentSequenceIndex = Math.floor(scrollProgress * totalSequences);
+                    const clampedIndex = Math.max(0, Math.min(currentSequenceIndex, totalSequences));
+                    if (currentVisibleLines[0] !== clampedIndex) {
+                        updateVisibleLines(clampedIndex, scrollDirection);
+                        currentVisibleLines = [clampedIndex];
+                    }
+                }
+
+                let ticking = false;
+                function handleScroll() {
+                    if (!ticking) {
+                        requestAnimationFrame(() => {
+                            updateAnimation();
+                            handleScrollAnimations();
+                            ticking = false;
+                        });
+                        ticking = true;
+                    }
+                }
+
+                // Cursor ripple effect
+                const rippleContainer = document.getElementById("rippleContainer");
+                const cursor = document.getElementById("cursor");
+                let mouseX = 0;
+                let mouseY = 0;
+                let rippleCount = 0;
+
+                document.addEventListener("mousemove", (e) => {
+                    mouseX = e.clientX;
+                    mouseY = e.clientY;
+                    cursor.style.left = mouseX + "px";
+                    cursor.style.top = mouseY + "px";
+                    createRipple(mouseX, mouseY);
+                });
+
+                document.addEventListener("mousedown", () => {
+                    cursor.classList.add("active");
+                    for (let i = 0; i < 3; i++) {
+                        setTimeout(() => {
+                            createRipple(mouseX, mouseY);
+                        }, i * 100);
+                    }
+                });
+
+                document.addEventListener("mouseup", () => {
+                    cursor.classList.remove("active");
+                });
+
+                document.addEventListener("mouseleave", () => {
+                    cursor.style.opacity = "0";
+                });
+
+                document.addEventListener("mouseenter", () => {
+                    cursor.style.opacity = "1";
+                });
+
+                function createRipple(x, y) {
+                    if (rippleCount > 15) return;
+                    const ripple = document.createElement("div");
+                    ripple.className = "ripple";
+                    ripple.style.left = x + "px";
+                    ripple.style.top = y + "px";
+                    rippleContainer.appendChild(ripple);
+                    rippleCount++;
+                    setTimeout(() => {
+                        if (ripple.parentNode) {
+                            ripple.parentNode.removeChild(ripple);
+                            rippleCount--;
+                        }
+                    }, 2500);
+                }
+
+                function createInitialRipples() {
+                    const centerX = window.innerWidth / 2;
+                    const centerY = window.innerHeight / 2;
+                    createRipple(centerX, centerY);
+                }
+
+                setTimeout(createInitialRipples, 500);
+
+                // Existing JavaScript
+                const scrollImages = document.querySelectorAll('.scroll-image');
+                const sections = document.querySelectorAll('.section');
+                const progressBar = document.querySelector('.scroll-progress');
+                const parallaxBg = document.querySelector('.parallax-bg');
+                const slides = document.querySelectorAll('.featured-slide');
+                const dots = document.querySelectorAll('.dot');
+                let currentSlide = 0;
+                let autoSlideInterval;
+                const verticalSlides = document.querySelectorAll('.vertical-slide');
+                const verticalIndicators = document.querySelectorAll('[data-vertical]');
+                let currentVerticalSlide = 0;
+                let verticalAutoSlide;
+                const horizontalSlides = document.querySelectorAll('.horizontal-slide');
+                const horizontalIndicators = document.querySelectorAll('[data-horizontal]');
+                let currentHorizontalSlide = 0;
+                let horizontalAutoSlide;
+                const marqueeContainer = document.querySelector('.marquee-container');
+                const marquee = document.querySelector('.marquee');
+                const navDots = document.querySelectorAll('.nav-dot');
+                let currentDot = 0;
+                const teamMembers = document.querySelectorAll('.team-member');
+                const profileImages = document.querySelectorAll('.profile-image');
+                const pageTransition = document.querySelector('.page-transition');
+
+                function updateScrollProgress() {
+                    const scrollTop = window.pageYOffset;
+                    const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+                    const scrollPercent = (scrollTop / docHeight) * 100;
+                    progressBar.style.width = scrollPercent + '%';
+                }
+
+                function handleScrollAnimations() {
+                    const scrollY = window.pageYOffset;
+                    const windowHeight = window.innerHeight;
+                    parallaxBg.style.transform = `translateY(${scrollY * 0.5}px)`;
+                    sections.forEach(section => {
+                        const sectionTop = section.offsetTop;
+                        const sectionHeight = section.offsetHeight;
+                        if (scrollY + windowHeight > sectionTop + 100) {
+                            section.classList.add('animate');
+                        }
+                    });
+                    scrollImages.forEach(img => {
+                        const rect = img.getBoundingClientRect();
+                        const centerY = rect.top + rect.height / 2;
+                        const distanceFromCenter = Math.abs(centerY - windowHeight / 2);
+                        const maxDistance = windowHeight / 2 + rect.height / 2;
+                        if (rect.bottom > 0 && rect.top < windowHeight) {
+                            const progress = 1 - (distanceFromCenter / maxDistance);
+                            if (progress > 0.5) {
+                                img.classList.add('zoom-in');
+                                img.classList.remove('zoom-out');
+                            } else {
+                                img.classList.add('zoom-out');
+                                img.classList.remove('zoom-in');
+                            }
+                        }
+                    });
+                    updateScrollProgress();
+                }
+
+                function showSlide(index) {
+                    slides.forEach(slide => slide.classList.remove('active'));
+                    dots.forEach(dot => dot.classList.remove('active'));
+                    slides[index].classList.add('active');
+                    dots[index].classList.add('active');
+                    currentSlide = index;
+                }
+
+                function nextSlide() {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    showSlide(currentSlide);
+                }
+
+                function startAutoSlide() {
+                    autoSlideInterval = setInterval(nextSlide, 5000);
+                }
+
+                function stopAutoSlide() {
+                    clearInterval(autoSlideInterval);
+                }
+
+                function showVerticalSlide(index) {
+                    verticalSlides.forEach((slide, i) => {
+                        slide.style.transform = `translateY(${(i - index) * 100}%)`;
+                    });
+                    verticalIndicators.forEach(indicator => indicator.classList.remove('active'));
+                    verticalIndicators[index].classList.add('active');
+                    currentVerticalSlide = index;
+                }
+
+                function nextVerticalSlide() {
+                    currentVerticalSlide = (currentVerticalSlide + 1) % verticalSlides.length;
+                    showVerticalSlide(currentVerticalSlide);
+                }
+
+                function startVerticalAutoSlide() {
+                    verticalAutoSlide = setInterval(nextVerticalSlide, 4000);
+                }
+
+                function stopVerticalAutoSlide() {
+                    clearInterval(verticalAutoSlide);
+                }
+
+                function showHorizontalSlide(index) {
+                    horizontalSlides.forEach((slide, i) => {
+                        slide.style.transform = `translateX(${(i - index) * 100}%)`;
+                    });
+                    horizontalIndicators.forEach(indicator => indicator.classList.remove('active'));
+                    horizontalIndicators[index].classList.add('active');
+                    currentHorizontalSlide = index;
+                }
+
+                function nextHorizontalSlide() {
+                    currentHorizontalSlide = (currentHorizontalSlide + 1) % horizontalSlides.length;
+                    showHorizontalSlide(currentHorizontalSlide);
+                }
+
+                function startHorizontalAutoSlide() {
+                    horizontalAutoSlide = setInterval(nextHorizontalSlide, 3500);
+                }
+
+                function stopHorizontalAutoSlide() {
+                    clearInterval(horizontalAutoSlide);
+                }
+
+                function updateMarqueeNav(index) {
+                    navDots.forEach(dot => dot.classList.remove('active'));
+                    navDots[index].classList.add('active');
+                    currentDot = index;
+                }
+
+                function handleMarqueeScroll() {
+                    const marqueeItems = document.querySelectorAll('.marquee-item');
+                    const containerWidth = marqueeContainer.offsetWidth;
+                    const itemWidth = marqueeItems[0].offsetWidth + 56;
+                    const scrollPosition = Math.abs(marquee.getBoundingClientRect().x);
+                    const totalItems = marqueeItems.length / 2;
+                    const index = Math.floor((scrollPosition + containerWidth / 2) / itemWidth) % totalItems;
+                    updateMarqueeNav(index);
+                }
+
+                dots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        showSlide(index);
+                        stopAutoSlide();
+                        setTimeout(startAutoSlide, 10000);
+                    });
+                });
+
+                verticalIndicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        showVerticalSlide(index);
+                        stopVerticalAutoSlide();
+                        setTimeout(startVerticalAutoSlide, 8000);
+                    });
+                });
+
+                horizontalIndicators.forEach((indicator, index) => {
+                    indicator.addEventListener('click', () => {
+                        showHorizontalSlide(index);
+                        stopHorizontalAutoSlide();
+                        setTimeout(startHorizontalAutoSlide, 8000);
+                    });
+                });
+
+                navDots.forEach((dot, index) => {
+                    dot.addEventListener('click', () => {
+                        updateMarqueeNav(index);
+                        const itemWidth = document.querySelector('.marquee-item').offsetWidth + 56;
+                        const scrollPosition = index * itemWidth;
+                        marquee.style.transform = `translateX(-${scrollPosition}px)`;
+                        marquee.style.animation = 'none';
+                        setTimeout(() => {
+                            marquee.style.animation = 'scroll 10s linear infinite';
+                        }, 50);
+                    });
+                });
+
+                teamMembers.forEach(member => {
+                    member.addEventListener('mouseenter', () => {
+                        const memberId = member.dataset.member;
+                        profileImages.forEach(img => {
+                            if (img.dataset.profile === memberId) {
+                                img.classList.add('active');
+                            } else {
+                                img.classList.remove('active');
+                            }
+                        });
+                    });
+                });
+
+                document.querySelector('.team-list').addEventListener('mouseleave', () => {
+                    profileImages.forEach(img => img.classList.remove('active'));
+                });
+
+                function handlePageTransition(event) {
+                    event.preventDefault();
+                    const href = event.target.getAttribute('href');
+                    if (href && href.startsWith('#')) {
+                        const targetElement = document.querySelector(href);
+                        if (targetElement) {
+                            targetElement.scrollIntoView({ behavior: 'smooth' });
+                        }
+                    } else if (href && href !== '#') {
+                        pageTransition.classList.add('active');
+                        setTimeout(() => {
+                            window.location.href = href;
+                        }, 800);
+                    }
+                }
+
+                document.querySelectorAll('a[href]').forEach(link => {
+                    link.addEventListener('click', handlePageTransition);
+                });
+
+                window.addEventListener('scroll', handleScroll);
+                window.addEventListener('resize', handleScrollAnimations);
+                marqueeContainer.addEventListener('scroll', handleMarqueeScroll);
+
+                initializeText();
+                handleScrollAnimations();
+                startAutoSlide();
+                startVerticalAutoSlide();
+                startHorizontalAutoSlide();
+
+                const featuredContainer = document.querySelector('.featured-container');
+                featuredContainer.addEventListener('mouseenter', stopAutoSlide);
+                featuredContainer.addEventListener('mouseleave', () => {
+                    startAutoSlide();
+                });
+
+                const verticalSlider = document.querySelector('.vertical-slider');
+                verticalSlider.addEventListener('mouseenter', stopVerticalAutoSlide);
+                verticalSlider.addEventListener('mouseleave', () => {
+                    startVerticalAutoSlide();
+                });
+
+                const horizontalSlider = document.querySelector('.horizontal-slider');
+                horizontalSlider.addEventListener('mouseenter', stopHorizontalAutoSlide);
+                horizontalSlider.addEventListener('mouseleave', () => {
+                    startHorizontalAutoSlide();
+                });
+
+                marqueeContainer.addEventListener('mouseenter', () => {
+                    marquee.style.animationPlayState = 'paused';
+                });
+
+                marqueeContainer.addEventListener('mouseleave', () => {
+                    marquee.style.animationPlayState = 'running';
+                });
+
+                window.addEventListener('load', function() {
+                    const loader = document.getElementById('loader');
+                    if (loader) {
+                        setTimeout(() => {
+                            loader.style.display = 'none';
+                        }, 3000);
+                    }
+                });
+
+            });
+            function acceptCookies() {
+                    document.getElementById("cookie-box").style.display = "none";
+                }
+
+                function declineCookies() {
+                    document.getElementById("cookie-box").style.display = "none";
+                }
+    </script>
+</body>
+</html>
